@@ -38,7 +38,7 @@ class Sprite {
   xpos: number;
   ypos: number;
   // image takes in the image path
-  constructor(
+  public constructor(
     height: number,
     width: number,
     image_src: string,
@@ -52,6 +52,24 @@ class Sprite {
     this.sprite.src = image_src;
     this.xpos = xpos;
     this.ypos = ypos;
+  }
+}
+// Map Class
+class map {
+  private xpos: number;
+  private ypos: number;
+  image_src: string;
+  image: HTMLImageElement;
+
+  public constructor(xpos: number, ypos: number, image_src: string) {
+    this.xpos = xpos;
+    this.ypos = ypos;
+    this.image_src = image_src;
+    this.image = new Image();
+    this.image.src = image_src;
+  }
+  draw(context: CanvasRenderingContext2D) {
+    context.drawImage(this.image, this.xpos, this.ypos);
   }
 }
 
@@ -72,14 +90,15 @@ playerSprite.sprite.onload = () => {
 // Loading map
 // Initialise window event listener
 keystrokeListener();
-const mapImage = new Image();
-mapImage.src = "../assets/public/untitled.png";
+const mapImage = new map(-120, -80, "../assets/public/untitled.png");
 
 // Animation loop
 const animate = () => {
   window.requestAnimationFrame(animate);
 
-  context.drawImage(mapImage, -120, -80);
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  mapImage.draw(context);
   context.drawImage(
     playerSprite.sprite,
     0,
@@ -92,4 +111,4 @@ const animate = () => {
     playerSprite.height * 1.5,
   );
 };
-mapImage.onload = () => animate();
+mapImage.image.onload = () => animate();
