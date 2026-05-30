@@ -1,14 +1,21 @@
+// Imports
+import { collisions } from "../assets/public/collisions.ts";
 // DOM & Context init
 
 const canvas = document.querySelector("canvas") as HTMLCanvasElement;
 canvas.width = 1024;
 canvas.height = 576;
 
-canvas.style.background = "#dfdfca";
-
 const context = canvas.getContext("2d") as CanvasRenderingContext2D;
 context.imageSmoothingEnabled = false;
+const offset: { x: number; y: number } = {
+  x: -120,
+  y: -80,
+};
+
 // Helper Functions
+
+// Input checker
 const handleInput = () => {
   if (input.isPressed("w")) {
     playerSprite.move(0, -playerSprite.speed);
@@ -24,6 +31,49 @@ const handleInput = () => {
   }
 };
 
+// Collisions Function
+const collisionsMap: number[][] = [];
+const collider = () => {
+  for (let i = 0; i < collisions.length; i += 70) {
+    collisionsMap.push(collisions.slice(i, 70 + i));
+  }
+};
+collider();
+type position = {
+  x: number;
+  y: number;
+};
+class Boundary {
+  position: position;
+  width: number;
+  height: number;
+  constructor(position: position) {
+    this.position = position;
+    this.width = 16 * 1.13;
+    this.height = 16 * 1.13;
+  }
+
+  draw(context: CanvasRenderingContext2D) {
+    context.fillStyle = "red";
+    context.fillRect(this.position.x, this.position.y, this.width, this.height);
+  }
+}
+
+const boundaries: Boundary[] = [];
+
+collisionsMap.forEach((row, ri) => {
+  row.forEach((symb, ci) => {
+    if (symb === 1025) {
+      boundaries.push(
+        new Boundary({
+          x: ci * 16 * 1.13 + offset.x,
+          y: ri * 16 * 1.13 + offset.y,
+        }),
+      );
+    }
+  });
+});
+console.log(boundaries);
 // Classes
 // Keystroke Event Controller
 
@@ -123,7 +173,7 @@ playerSprite.sprite.onload = () => {
 // Loading map
 // Initialise window event listener
 const input = new InputController();
-const mapImage = new map(-120, -80, "../assets/public/untitled.png");
+const mapImage = new map(offset.x, offset.y, "../assets/public/untitled.png");
 
 // Animation loop
 const animate = () => {
@@ -132,6 +182,7 @@ const animate = () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   mapImage.draw(context);
+  boundaries.forEach((boundary) => boundary.draw(context));
   context.drawImage(
     playerSprite.sprite,
     0,
