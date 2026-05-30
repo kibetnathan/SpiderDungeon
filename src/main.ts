@@ -14,12 +14,16 @@ const keystrokeListener = () => {
   window.addEventListener("keydown", (e) => {
     switch (e.key) {
       case "w":
+        playerSprite.move(0, -7.5);
         break;
       case "a":
+        playerSprite.move(-7.5, 0);
         break;
       case "s":
+        playerSprite.move(0, 7.5);
         break;
       case "d":
+        playerSprite.move(7.5, 0);
         break;
       case " ": // Space Bar
         break;
@@ -53,6 +57,11 @@ class Sprite {
     this.xpos = xpos;
     this.ypos = ypos;
   }
+  move(dx: number, dy: number) {
+    // move the sprite by incrementing the xpos/ypos by the params passed then redrawing the sprite
+    this.xpos = this.xpos + dx;
+    this.ypos = this.ypos + dy;
+  }
 }
 // Map Class
 class map {
@@ -70,6 +79,9 @@ class map {
   }
   draw(context: CanvasRenderingContext2D) {
     context.drawImage(this.image, this.xpos, this.ypos);
+  }
+  moveMap() {
+    // increment the map pos based on dx and dy
   }
 }
 
