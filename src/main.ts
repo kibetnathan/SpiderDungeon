@@ -13,7 +13,32 @@ const offset: { x: number; y: number } = {
   y: -80,
 };
 
+// types
+type Hitbox = {
+  top: number;
+  bottom: number;
+  left: number;
+  right: number;
+};
+
 // Helper Functions
+
+// Collision checker\
+
+const rectangularCollision = ({
+  hitbox1,
+  hitbox2,
+}: {
+  hitbox1: Hitbox;
+  hitbox2: Hitbox;
+}) => {
+  return (
+    hitbox1.right >= hitbox2.left &&
+    hitbox1.left <= hitbox2.right &&
+    hitbox1.bottom >= hitbox2.top &&
+    hitbox1.top <= hitbox2.bottom
+  );
+};
 
 // Input checker
 const handleInput = () => {
