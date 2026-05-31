@@ -47,10 +47,14 @@ class Boundary {
   position: position;
   width: number;
   height: number;
+  right: number;
+  bottom: number;
   constructor(position: position) {
     this.position = position;
     this.width = 16 * 1.13;
     this.height = 16 * 1.13;
+    this.right = this.position.x + this.width;
+    this.bottom = this.position.y + this.height;
   }
 
   draw(context: CanvasRenderingContext2D) {
@@ -73,7 +77,7 @@ collisionsMap.forEach((row, ri) => {
     }
   });
 });
-console.log(boundaries);
+
 // Classes
 // Keystroke Event Controller
 
@@ -111,6 +115,9 @@ class Sprite {
   xpos: number;
   ypos: number;
   speed: number;
+  right: number;
+  bottom: number;
+  frames: number;
   // image takes in the image path
   public constructor(
     height: number,
@@ -118,6 +125,7 @@ class Sprite {
     image_src: string,
     xpos: number,
     ypos: number,
+    frames: number,
   ) {
     this.height = height;
     this.width = width;
@@ -127,11 +135,16 @@ class Sprite {
     this.xpos = xpos;
     this.ypos = ypos;
     this.speed = 3;
+    this.right = this.xpos + this.width;
+    this.bottom = this.ypos + this.height;
+    this.frames = frames;
   }
   move(dx: number, dy: number) {
     // move the sprite by incrementing the xpos/ypos by the params passed then redrawing the sprite
     this.xpos = this.xpos + dx;
     this.ypos = this.ypos + dy;
+    this.right = this.xpos + this.width;
+    this.bottom = this.ypos + this.height;
   }
 }
 // Map Class
@@ -163,18 +176,25 @@ const playerSprite = new Sprite(
   "../assets/public/blue_haired_woman.png",
   0,
   0,
+  0,
 );
 playerSprite.sprite.onload = () => {
   playerSprite.height = playerSprite.sprite.height / 8;
   playerSprite.width = playerSprite.sprite.width / 4;
   playerSprite.xpos = canvas.width / 2 - playerSprite.width / 2;
   playerSprite.ypos = canvas.height / 2 - playerSprite.height / 2;
+  playerSprite.frames =
+    (playerSprite.sprite.height * playerSprite.sprite.width) /
+    (playerSprite.height * playerSprite.width);
+  playerSprite.right = playerSprite.xpos + playerSprite.width;
+  playerSprite.bottom = playerSprite.ypos + playerSprite.height;
 };
+
 // Loading map
 // Initialise window event listener
 const input = new InputController();
 const mapImage = new map(offset.x, offset.y, "../assets/public/untitled.png");
-
+const testBoundary = new Boundary({ x: 120, y: 80 });
 // Animation loop
 const animate = () => {
   window.requestAnimationFrame(animate);
@@ -182,7 +202,8 @@ const animate = () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   mapImage.draw(context);
-  boundaries.forEach((boundary) => boundary.draw(context));
+  // boundaries.forEach((boundary) => boundary.draw(context));
+  testBoundary.draw(context);
   context.drawImage(
     playerSprite.sprite,
     0,
@@ -195,5 +216,14 @@ const animate = () => {
     playerSprite.height * 1.5,
   );
   handleInput();
+
+  if (
+    playerSprite.right >= testBoundary.position.x &&
+    playerSprite.xpos <= testBoundary.right &&
+    playerSprite.bottom >= testBoundary.position.y &&
+    playerSprite.ypos <= testBoundary.bottom
+  ) {
+    console.log("colliding");
+  }
 };
 mapImage.image.onload = () => animate();
