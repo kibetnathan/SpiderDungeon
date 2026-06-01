@@ -1,23 +1,24 @@
 ## To Do list
+
 - [x] Get assets
-	- Map
-	- Characters
-	- Enemies
-	- Weapons
-	- Boss
-	- GUI
+  - Map
+  - Characters
+  - Enemies
+  - Weapons
+  - Boss
+  - GUI
 - [x] Export Map
 - [x] Scaffold source code structure
 - [x] Install dependencies
 - [x] Render map
-- [ ] Create Player
-- [ ] Create Classes for sprites and players
-- [ ] Input detection
-- [ ] Implement player movement 
-- [ ] Implement npc movement
+- [x] Create Player
+- [x] Create Classes for sprites and players
+- [x] Input detection
+- [x] Implement player movement
+- [x] Implement npc movement
 - [ ] Create Dummies
 - [ ] Implement shooting
 - [ ] Create Custom Enemy Assets
 - [ ] Implement Bows
 - [ ] Implement power ups
-- [ ] 
+- [ ]

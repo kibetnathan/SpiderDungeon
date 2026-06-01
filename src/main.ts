@@ -23,7 +23,7 @@ type Hitbox = {
 
 // Helper Functions
 
-// Collision checker\
+// Collision checker
 
 const rectangularCollision = ({
   hitbox1,
@@ -143,6 +143,7 @@ class Sprite {
   right: number;
   bottom: number;
   frames: number;
+  hitbox: Hitbox;
   // image takes in the image path
   public constructor(
     height: number,
@@ -163,6 +164,15 @@ class Sprite {
     this.right = this.xpos + this.width;
     this.bottom = this.ypos + this.height;
     this.frames = frames;
+    this.hitbox = { top: 0, bottom: 0, left: 0, right: 0 };
+    this.sprite.onload = () => {
+      this.hitbox = {
+        top: this.ypos,
+        bottom: this.bottom,
+        left: this.xpos,
+        right: this.right,
+      };
+    };
   }
   move(dx: number, dy: number) {
     // move the sprite by incrementing the xpos/ypos by the params passed then redrawing the sprite
