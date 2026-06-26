@@ -1,4 +1,4 @@
-## To Do list
+# To Do list
 
 - [x] Get assets
   - Map
@@ -16,6 +16,7 @@
 - [x] Input detection
 - [x] Implement player movement
 - [x] Implement npc movement
+- [ ] Implement wall collisions
 - [ ] Create Dummies
 - [ ] Implement shooting
 - [ ] Create Custom Enemy Assets

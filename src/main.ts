@@ -41,29 +41,120 @@ const rectangularCollision = ({
 };
 
 // Input checker
-const handleInput = () => {
+const handleInput = (playerSprite: Sprite, boundaries: Array<Boundary>) => {
+  let colliding = false;
   if (input.isPressed("w")) {
-    playerSprite.move(0, -playerSprite.speed);
+    colliding = false;
+    for (let i = 0; i < boundaries.length; i++) {
+      const player_hitbox = playerSprite.hitbox;
+      const predicted_hitbox: Hitbox = {
+        top: player_hitbox.top - playerSprite.speed,
+        bottom: player_hitbox.bottom - playerSprite.speed,
+        left: player_hitbox.left,
+        right: player_hitbox.right,
+      };
+      if (
+        rectangularCollision({
+          hitbox1: predicted_hitbox,
+          hitbox2: { ...boundaries[i].hitbox },
+        })
+      ) {
+        console.log("coliding...");
+        colliding = true;
+        break;
+      }
+    }
+    if (!colliding) {
+      playerSprite.move(0, -playerSprite.speed);
+    }
   }
   if (input.isPressed("a")) {
-    playerSprite.move(-playerSprite.speed, 0);
+    colliding = false;
+    for (let i = 0; i < boundaries.length; i++) {
+      const player_hitbox = playerSprite.hitbox;
+      const predicted_hitbox: Hitbox = {
+        top: player_hitbox.top,
+        bottom: player_hitbox.bottom,
+        left: player_hitbox.left - playerSprite.speed,
+        right: player_hitbox.right - playerSprite.speed,
+      };
+      if (
+        rectangularCollision({
+          hitbox1: predicted_hitbox,
+          hitbox2: { ...boundaries[i].hitbox },
+        })
+      ) {
+        console.log("coliding...");
+        colliding = true;
+        break;
+      }
+    }
+    if (!colliding) {
+      playerSprite.move(-playerSprite.speed, 0);
+    }
   }
   if (input.isPressed("s")) {
-    playerSprite.move(0, playerSprite.speed);
+    colliding = false;
+    for (let i = 0; i < boundaries.length; i++) {
+      const player_hitbox = playerSprite.hitbox;
+      const predicted_hitbox: Hitbox = {
+        top: player_hitbox.top + playerSprite.speed,
+        bottom: player_hitbox.bottom + playerSprite.speed,
+        left: player_hitbox.left,
+        right: player_hitbox.right,
+      };
+      if (
+        rectangularCollision({
+          hitbox1: predicted_hitbox,
+          hitbox2: { ...boundaries[i].hitbox },
+        })
+      ) {
+        console.log("coliding...");
+        colliding = true;
+        break;
+      }
+    }
+    if (!colliding) {
+      playerSprite.move(0, playerSprite.speed);
+    }
   }
   if (input.isPressed("d")) {
-    playerSprite.move(playerSprite.speed, 0);
+    colliding = false;
+    for (let i = 0; i < boundaries.length; i++) {
+      const player_hitbox = playerSprite.hitbox;
+      const predicted_hitbox: Hitbox = {
+        top: player_hitbox.top,
+        bottom: player_hitbox.bottom,
+        left: player_hitbox.left + playerSprite.speed,
+        right: player_hitbox.right + playerSprite.speed,
+      };
+      if (
+        rectangularCollision({
+          hitbox1: predicted_hitbox,
+          hitbox2: { ...boundaries[i].hitbox },
+        })
+      ) {
+        console.log("coliding...");
+        colliding = true;
+        break;
+      }
+    }
+    if (!colliding) {
+      playerSprite.move(playerSprite.speed, 0);
+    }
   }
 };
 
-// Collisions Function
+// Collisions Function: Loads in collisions to a 2D Array
+const MAP_WIDTH = 70;
 const collisionsMap: number[][] = [];
-const collider = () => {
-  for (let i = 0; i < collisions.length; i += 70) {
-    collisionsMap.push(collisions.slice(i, 70 + i));
+const collisionMapper = (collisions: Array<number>) => {
+  for (let i = 0; i < collisions.length; i += MAP_WIDTH) {
+    collisionsMap.push(collisions.slice(i, MAP_WIDTH + i));
   }
 };
-collider();
+collisionMapper(collisions);
+
 type position = {
   x: number;
   y: number;
@@ -72,14 +163,24 @@ class Boundary {
   position: position;
   width: number;
   height: number;
-  right: number;
-  bottom: number;
+  xpos: number;
+  ypos: number;
+  hitbox: Hitbox;
+
   constructor(position: position) {
     this.position = position;
     this.width = 16 * 1.13;
     this.height = 16 * 1.13;
-    this.right = this.position.x + this.width;
-    this.bottom = this.position.y + this.height;
+    this.xpos = this.position.x;
+    this.ypos = this.position.y;
+
+    // Fix the inversions:
+    this.hitbox = {
+      top: this.ypos + this.height,
+      bottom: this.ypos,
+      left: this.xpos,
+      right: this.xpos,
+    };
   }
 
   draw(context: CanvasRenderingContext2D) {
@@ -180,6 +281,12 @@ class Sprite {
     this.ypos = this.ypos + dy;
     this.right = this.xpos + this.width;
     this.bottom = this.ypos + this.height;
+    this.hitbox = {
+      top: this.ypos,
+      bottom: this.bottom,
+      left: this.xpos,
+      right: this.right,
+    };
   }
 }
 // Map Class
@@ -229,7 +336,7 @@ playerSprite.sprite.onload = () => {
 // Initialise window event listener
 const input = new InputController();
 const mapImage = new map(offset.x, offset.y, "../assets/public/untitled.png");
-const testBoundary = new Boundary({ x: 120, y: 80 });
+
 // Animation loop
 const animate = () => {
   window.requestAnimationFrame(animate);
@@ -237,8 +344,8 @@ const animate = () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   mapImage.draw(context);
-  // boundaries.forEach((boundary) => boundary.draw(context));
-  testBoundary.draw(context);
+  boundaries.forEach((boundary) => boundary.draw(context));
+
   context.drawImage(
     playerSprite.sprite,
     0,
@@ -250,15 +357,6 @@ const animate = () => {
     playerSprite.width * 1.5,
     playerSprite.height * 1.5,
   );
-  handleInput();
-
-  if (
-    playerSprite.right >= testBoundary.position.x &&
-    playerSprite.xpos <= testBoundary.right &&
-    playerSprite.bottom >= testBoundary.position.y &&
-    playerSprite.ypos <= testBoundary.bottom
-  ) {
-    console.log("colliding");
-  }
+  handleInput(playerSprite, boundaries);
 };
 mapImage.image.onload = () => animate();
