@@ -42,9 +42,8 @@ const rectangularCollision = ({
 
 // Input checker
 const handleInput = (playerSprite: Sprite, boundaries: Array<Boundary>) => {
-  let colliding = false;
   if (input.isPressed("w")) {
-    colliding = false;
+    let colliding = false;
     for (let i = 0; i < boundaries.length; i++) {
       const player_hitbox = playerSprite.hitbox;
       const predicted_hitbox: Hitbox = {
@@ -69,7 +68,7 @@ const handleInput = (playerSprite: Sprite, boundaries: Array<Boundary>) => {
     }
   }
   if (input.isPressed("a")) {
-    colliding = false;
+    let colliding = false;
     for (let i = 0; i < boundaries.length; i++) {
       const player_hitbox = playerSprite.hitbox;
       const predicted_hitbox: Hitbox = {
@@ -94,7 +93,7 @@ const handleInput = (playerSprite: Sprite, boundaries: Array<Boundary>) => {
     }
   }
   if (input.isPressed("s")) {
-    colliding = false;
+    let colliding = false;
     for (let i = 0; i < boundaries.length; i++) {
       const player_hitbox = playerSprite.hitbox;
       const predicted_hitbox: Hitbox = {
@@ -119,7 +118,7 @@ const handleInput = (playerSprite: Sprite, boundaries: Array<Boundary>) => {
     }
   }
   if (input.isPressed("d")) {
-    colliding = false;
+    let colliding = false;
     for (let i = 0; i < boundaries.length; i++) {
       const player_hitbox = playerSprite.hitbox;
       const predicted_hitbox: Hitbox = {
@@ -174,9 +173,8 @@ class Boundary {
     this.xpos = this.position.x;
     this.ypos = this.position.y;
 
-    // Fix the inversions:
     this.hitbox = {
-      top: this.ypos + this.height,
+      top: this.ypos - this.height,
       bottom: this.ypos,
       left: this.xpos,
       right: this.xpos,
@@ -330,6 +328,12 @@ playerSprite.sprite.onload = () => {
     (playerSprite.height * playerSprite.width);
   playerSprite.right = playerSprite.xpos + playerSprite.width;
   playerSprite.bottom = playerSprite.ypos + playerSprite.height;
+  playerSprite.hitbox = {
+    top: playerSprite.ypos,
+    bottom: playerSprite.bottom,
+    left: playerSprite.xpos,
+    right: playerSprite.right,
+  };
 };
 
 // Loading map
@@ -344,7 +348,7 @@ const animate = () => {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   mapImage.draw(context);
-  boundaries.forEach((boundary) => boundary.draw(context));
+  // boundaries.forEach((boundary) => boundary.draw(context));
 
   context.drawImage(
     playerSprite.sprite,
